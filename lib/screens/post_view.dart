@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/article_info.dart';
 
 class PostView extends StatelessWidget {
-  final ArticleInfo article;
+  final Article article;
   const PostView({super.key, required this.article});
 
   @override
@@ -18,7 +18,9 @@ class PostView extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(article.image),
+                    image: (article.thumbUrl != null && article.thumbUrl!.isNotEmpty)
+                        ? NetworkImage(article.thumbUrl!)
+                        : const AssetImage('assets/no_image.jpg') as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -36,7 +38,6 @@ class PostView extends StatelessWidget {
               ),
             ],
           ),
-
           Expanded(
             child: Transform.translate(
               offset: const Offset(0, -30),
@@ -45,54 +46,33 @@ class PostView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                  ),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(40)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      article.headLine,
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                      ),
+                      article.headLine ?? "",
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, height: 1.2),
                     ),
                     const SizedBox(height: 15),
-
                     Row(
                       children: [
-                        CircleAvatar(
-                          radius: 14,
-                          backgroundColor: Colors.grey[300],
-                          backgroundImage: AssetImage(article.image),
-                        ),
+                        const CircleAvatar(radius: 14, child: Icon(Icons.person, size: 15)),
                         const SizedBox(width: 12),
                         Text(
-                          "Harry Harper • Apr 12, 2023",
-                          style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500
-                          ),
+                          "${article.writer} • ${article.date?.day}/${article.date?.month}/${article.date?.year}",
+                          style: TextStyle(color: Colors.grey[700], fontSize: 13),
                         ),
                       ],
                     ),
                     const SizedBox(height: 25),
-
-
                     Expanded(
-                      child: Text(
-                        article.bodyContent,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          height: 1.6,
-                          color: Colors.black87,
+                      child: SingleChildScrollView(
+                        child: Text(
+                          article.body ?? article.description ?? "No content available",
+                          style: const TextStyle(fontSize: 16, height: 1.6, color: Colors.black87),
                         ),
-                        softWrap: true,
-                        overflow: TextOverflow.fade,
                       ),
                     ),
                   ],
